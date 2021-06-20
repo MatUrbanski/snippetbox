@@ -3,7 +3,6 @@ package main
 import (
   "fmt"
   "html/template"
-  "log"
   "net/http"
   "strconv"
 )
@@ -16,7 +15,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
   // Importantly, we then return from the handler. If we don't return, the handler
   // would keep execurint and also write the "Hello from Snippetbox".
   if r.URL.Path != "/" {
-    http.NotFound(w, r)
+    app.notFound(w) // Use the notFound() helper
     return
   }
 
@@ -35,8 +34,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
   // as a variadic parameter?
   ts, err := template.ParseFiles(files...)
   if err != nil {
-    log.Println(err.Error())
-    http.Error(w, "Internal Server Error", 500)
+    app.serverError(w, err) // Use the serverError() helper.
     return
   }
 
@@ -48,8 +46,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
     // Because the home handler function is now a method against application
     // it can access its fields, including the error logger. We'll write the log
     // message to this instead of the standard logger.
-    app.errorLog.Println(err.Error())
-    http.Error(w, "Internal Server Error", 500)
+    app.serverError(w, err) // Use the serverError() helper.
   }
 }
 
@@ -62,7 +59,7 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
   if err != nil || id < 1 {
-    http.NotFound(w, r)
+    app.notFound(w) // Use the notFound() helper.
     return
   }
 
@@ -83,7 +80,7 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 
     // Use the http.Error() function to send a 405 status code and "Method not
     // Allowed" string as the response body.
-    http.Error(w, "Method Not Allowed", 405)
+    app.clientError(w, http.StatusMethodNotAllowed) // Use the clientError() helper.
     return
   }
 
