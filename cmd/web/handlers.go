@@ -8,13 +8,9 @@ import (
   "strconv"
 )
 
-// Define a home handler function which writes a byte slice containing
-// "Hello from Snippetbox" as the reponse body.
-// The http.ResponseWriter parameter provides methods for assembling a HTTP
-// response and sending it to the user, and the *http.Request parameter is a
-// pointer to a struct which holds information about the current request
-// (like the HTTP method and the URL being requested).
-func home(w http.ResponseWriter, r *http.Request) {
+// Change the signature of the home handler so it is defined as a method against
+// *application.
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
   // Check if the current request URL path exactly matches "/". If it doesn't, use
   // the http.NotFound() function to send a 404 response to the client.
   // Importantly, we then return from the handler. If we don't return, the handler
@@ -49,13 +45,16 @@ func home(w http.ResponseWriter, r *http.Request) {
   // dynamic data that we want to pass in, which for now we'll leave as nil.
   err = ts.Execute(w, nil)
   if err != nil {
-    log.Println(err.Error())
+    // Because the home handler function is now a method against application
+    // it can access its fields, including the error logger. We'll write the log
+    // message to this instead of the standard logger.
+    app.errorLog.Println(err.Error())
     http.Error(w, "Internal Server Error", 500)
   }
 }
 
 // Add a showSnippet handler function.
-func showSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   // Extract the value of the id parameter from the query string and try to
   // convert it to an integer using the strconv.Atoi(i) function. If it can't
   // be converted to an integer, or the value is less than 1, we return a 404 page
@@ -73,7 +72,7 @@ func showSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add a createSnippet handler function.
-func createSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
   // Use r.Method to check whether the request is using POST or not. Note that
   // http.MethodPost is a constant equal to the string "POST".
   if r.Method != http.MethodPost {
