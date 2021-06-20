@@ -7,8 +7,6 @@ import (
   "strconv"
 )
 
-// Change the signature of the home handler so it is defined as a method against
-// *application.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
   // Check if the current request URL path exactly matches "/". If it doesn't, use
   // the http.NotFound() function to send a 404 response to the client.
@@ -29,9 +27,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
   // Use the template.ParseFiles() function to read the template file into a
   // template set. If there's an error, we log the detailed error message and use
-  // the http.Error() function to send a generic 500 Internal Server Error
-  // response to the user. Notice that we can pass the slice of file paths
-  // as a variadic parameter?
+  // the app.serverError() function to send a generic 500 Internal Server Error
+  // response to the user.
   ts, err := template.ParseFiles(files...)
   if err != nil {
     app.serverError(w, err) // Use the serverError() helper.
@@ -50,7 +47,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-// Add a showSnippet handler function.
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   // Extract the value of the id parameter from the query string and try to
   // convert it to an integer using the strconv.Atoi(i) function. If it can't
@@ -68,7 +64,6 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Display a specific snippet with ID %d", id)
 }
 
-// Add a createSnippet handler function.
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
   // Use r.Method to check whether the request is using POST or not. Note that
   // http.MethodPost is a constant equal to the string "POST".
