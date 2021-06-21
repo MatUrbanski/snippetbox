@@ -25,6 +25,6 @@ func(app *application) routes() http.Handler {
   // "/static" prefix before the request reaches the file server.
   mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-  // Wrap the existing chain with the srcureHeaders and logRequest middlewares.
-  return app.logRequest(secureHeaders(mux))
+  // Wrap the existing chain with the recoverPanic, secureHeaders and logRequest middlewares.
+  return app.recoverPanic(app.logRequest(secureHeaders(mux)))
 }
