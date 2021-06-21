@@ -12,7 +12,10 @@ import(
 // then sends a generic 500 Internal Server Error response to the user.
 func (app *application) serverError(w http.ResponseWriter, err error) {
   trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-  app.errorLog.Output(2, trace)
+
+   if err := app.errorLog.Output(2, trace); err != nil {
+    fmt.Println("Unable to put error trace in server logs.")
+   }
 
   http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
@@ -73,5 +76,11 @@ func(app *application) render(w http.ResponseWriter, r *http.Request, name strin
   // Write the contents of the buffer to the http.ResponseWriter. Again, this
   // is another time where we pass our http.ResponseWriter to a function that
   // takes an io.Writer.
-   buf.WriteTo(w)
+  _, err = buf.WriteTo(w)
+
+  if err != nil {
+    app.serverError(w, err)
+
+    return
+  }
 }
