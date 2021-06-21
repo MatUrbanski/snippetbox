@@ -6,6 +6,7 @@ import (
   "log"
   "net/http"
   "os"
+  "mateuszurbanski/snippetbox/pkg/models/mysql"
   _ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,12 +17,11 @@ import (
 // trick to getting around this is to alias the package name to the blank identifier. This is
 // standard practice for most of Go’s SQL drivers.
 
-// Define an application struct to hold the application-wide dependencies for the
-// web application. For now we'll only include fields for the two custom loggers, but
-// we'll add more to it as the build progresses.
+// Define an application struct to hold the application-wide dependencies.
 type application struct {
   errorLog *log.Logger
   infoLog  *log.Logger
+  snippets *mysql.SnippetModel
 }
 
 func main() {
@@ -68,6 +68,7 @@ func main() {
   app := &application{
     errorLog: errorLog,
     infoLog: infoLog,
+    snippets: &mysql.SnippetModel{DB: db},
   }
 
 
