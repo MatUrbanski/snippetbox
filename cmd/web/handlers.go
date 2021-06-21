@@ -3,7 +3,7 @@ package main
 import (
   "errors"
   "fmt"
-  "html/template"
+  // "html/template"
   "net/http"
   "strconv"
   "mateuszurbanski/snippetbox/pkg/models"
@@ -19,34 +19,44 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  s, err := app.snippets.Latest()
+  if err != nil {
+    app.serverError(w, err)
+    return
+  }
+
+  for _, snippet := range s {
+    fmt.Fprintf(w, "%v\n", snippet)
+  }
+
   // Initialize a slice containing the paths to the two files. Note that the
   // home.page.tmpl file must be the *first* file in the slice.
-  files := []string{
-    "./ui/html/home.page.tmpl",
-    "./ui/html/base.layout.tmpl",
-    "./ui/html/footer.partial.tmpl",
-  }
+  // files := []string{
+  //   "./ui/html/home.page.tmpl",
+  //   "./ui/html/base.layout.tmpl",
+  //   "./ui/html/footer.partial.tmpl",
+  // }
 
   // Use the template.ParseFiles() function to read the template file into a
   // template set. If there's an error, we log the detailed error message and use
   // the app.serverError() function to send a generic 500 Internal Server Error
   // response to the user.
-  ts, err := template.ParseFiles(files...)
-  if err != nil {
-    app.serverError(w, err) // Use the serverError() helper.
-    return
-  }
+  // ts, err := template.ParseFiles(files...)
+  // if err != nil {
+  //   app.serverError(w, err) // Use the serverError() helper.
+  //   return
+  // }
 
   // We then use the Execute() method on the template set to write the template
   // content as the response body. The last parameter to Execute() represents any
   // dynamic data that we want to pass in, which for now we'll leave as nil.
-  err = ts.Execute(w, nil)
-  if err != nil {
-    // Because the home handler function is now a method against application
-    // it can access its fields, including the error logger. We'll write the log
-    // message to this instead of the standard logger.
-    app.serverError(w, err) // Use the serverError() helper.
-  }
+  // err = ts.Execute(w, nil)
+  // if err != nil {
+  //   // Because the home handler function is now a method against application
+  //   // it can access its fields, including the error logger. We'll write the log
+  //   // message to this instead of the standard logger.
+  //   app.serverError(w, err) // Use the serverError() helper.
+  // }
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
