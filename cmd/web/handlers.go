@@ -9,16 +9,9 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-  // Check if the current request URL path exactly matches "/". If it doesn't, use
-  // the http.NotFound() function to send a 404 response to the client.
-  // Importantly, we then return from the handler. If we don't return, the handler
-  // would keep execurint and also write the "Hello from Snippetbox".
-  if r.URL.Path != "/" {
-    app.notFound(w) // Use the notFound() helper
-    return
-  }
-
+  // Get the 10 latest Snippets.
   s, err := app.snippets.Latest()
+
   if err != nil {
     app.serverError(w, err)
     return
@@ -29,11 +22,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
-  // Extract the value of the id parameter from the query string and try to
-  // convert it to an integer using the strconv.Atoi(i) function. If it can't
-  // be converted to an integer, or the value is less than 1, we return a 404 page
-  // not found response.
-  id, err := strconv.Atoi(r.URL.Query().Get("id"))
+  // Pat doesn't strip the colon from the named capture key, so we need to
+  // get the value of ":id" from the query string instead of "id".
+  id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 
   if err != nil || id < 1 {
     app.notFound(w) // Use the notFound() helper.
@@ -58,21 +49,11 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   app.render(w, r, "show.page.tmpl", &templateData{Snippet: s})
 }
 
+// func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
+//   w.Write([]byte("Create a new snippet..."))
+// }
+
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
-  // Use r.Method to check whether the request is using POST or not. Note that
-  // http.MethodPost is a constant equal to the string "POST".
-  if r.Method != http.MethodPost {
-    // Use the Header().Set() method to add an 'Allow: POST' header to the
-    // response header map. The first paramter is the header name, and
-    // the second parameter is the header value.
-    w.Header().Set("Allow", http.MethodPost)
-
-    // Use the http.Error() function to send a 405 status code and "Method not
-    // Allowed" string as the response body.
-    app.clientError(w, http.StatusMethodNotAllowed) // Use the clientError() helper.
-    return
-  }
-
   // Create some variables holding dummy data. We'll remove these later on
   // during the build.
   title := "O snail"
