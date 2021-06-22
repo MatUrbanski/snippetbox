@@ -44,6 +44,10 @@ func main() {
   // bytes long.
   secret := flag.String("secret", "n6Gdh+pPbnzHbS*+9Pk8qGWhTzbpa@gd", "Secret key")
 
+  // Define a new command-line flag for the current environment.
+  environment := flag.String("environment", "development", "Current Environment")
+
+
   // Importantly, we use the flag.Parse() function to parse the command-line flag.
   // This reads in the command-line flag value and assigns it to the addr
   // variable. You need to call this *before* you use the addr variable
@@ -120,7 +124,12 @@ func main() {
   // log.Printf() function to interpolate the address with the log message.
   infoLog.Printf("Starting server on %s", *addr)
 
-  err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+
+  if *environment == "production" {
+    err = srv.ListenAndServe()
+  } else {
+    err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+  }
 
   errorLog.Fatal(err)
 }
