@@ -49,9 +49,9 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
   app.render(w, r, "show.page.tmpl", &templateData{Snippet: s})
 }
 
-// func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
-//   w.Write([]byte("Create a new snippet..."))
-// }
+func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
+  app.render(w, r, "create.page.tmpl", nil)
+}
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
   // Create some variables holding dummy data. We'll remove these later on

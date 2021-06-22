@@ -17,11 +17,14 @@ func(app *application) routes() http.Handler {
   // Register the home function as the handler for the "/" URL pattern.
   mux.Get("/", http.HandlerFunc(app.home))
 
+  // Register the createSnippetForm function as the handler for the GET "/snippet/create" URL pattern.
+  mux.Get("/snippet/create", http.HandlerFunc(app.createSnippetForm))
+
+  // Register the createSnippet function as the handler for the POST "/snippet/create" URL pattern.
+  mux.Post("/snippet/create", http.HandlerFunc(app.createSnippet))
+
   // Register the showSnippet function as the handler for the "/snippet/:id" URL pattern.
   mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet))
-
-  // Register the createSnippet function as the handler for the "/snippet/create" URL pattern.
-  mux.Post("/snippet/create", http.HandlerFunc(app.createSnippet))
 
   // Create a file server which serves files out of the "./ui/static" directory.
   // Note that the path given to the http.Dir function is relative to the project
