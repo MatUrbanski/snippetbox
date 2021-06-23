@@ -22,6 +22,10 @@ import (
 // trick to getting around this is to alias the package name to the blank identifier. This is
 // standard practice for most of Go’s SQL drivers.
 
+type contextKey string
+
+const contextKeyIsAuthenticated = contextKey("isAuthenticated")
+
 // Define an application struct to hold the application-wide dependencies.
 type application struct {
   errorLog     *log.Logger
