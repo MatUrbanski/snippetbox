@@ -23,20 +23,20 @@ func(app *application) routes() http.Handler {
   mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
 
   // Register the createSnippetForm function as the handler for the GET "/snippet/create" URL pattern.
-  mux.Get("/snippet/create", dynamicMiddleware.ThenFunc(app.createSnippetForm))
+  mux.Get("/snippet/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createSnippetForm))
 
   // Register the createSnippet function as the handler for the POST "/snippet/create" URL pattern.
-  mux.Post("/snippet/create", dynamicMiddleware.ThenFunc(app.createSnippet))
+  mux.Post("/snippet/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createSnippet))
 
   // Register the showSnippet function as the handler for the "/snippet/:id" URL pattern.
-  mux.Get("/snippet/:id", dynamicMiddleware.ThenFunc(app.showSnippet))
+  mux.Get("/snippet/:id", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.showSnippet))
 
   // Add routes for user signup, login and logout.
   mux.Get("/user/signup", dynamicMiddleware.ThenFunc(app.signupUserForm))
   mux.Post("/user/signup", dynamicMiddleware.ThenFunc(app.signupUser))
   mux.Get("/user/login", dynamicMiddleware.ThenFunc(app.loginUserForm))
   mux.Post("/user/login", dynamicMiddleware.ThenFunc(app.loginUser))
-  mux.Post("/user/logout", dynamicMiddleware.ThenFunc(app.logoutUser))
+  mux.Post("/user/logout", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.logoutUser))
 
   // Create a file server which serves files out of the "./ui/static" directory.
   // Note that the path given to the http.Dir function is relative to the project
