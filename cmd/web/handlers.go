@@ -163,8 +163,6 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 
   // And redirect the user to the login page.
   http.Redirect(w, r, "/user/login", http.StatusSeeOther)
-
-  fmt.Fprintln(w, "Create a new User...")
 }
 
 func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
@@ -220,5 +218,11 @@ func (app *application) logoutUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ping(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("OK"))
+   _, err := w.Write([]byte("OK"))
+
+   if err != nil {
+    fmt.Fprintln(w, "Something went wrong")
+
+    return
+  }
 }
